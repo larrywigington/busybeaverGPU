@@ -1,0 +1,24 @@
+{
+  "max_steps": 1000000,                // Max steps before considering a machine non-halting
+  "state_size": 3,                     // Number of Turing machine states to simulate
+  "num_symbols": 2,                    // Binary tape alphabet: typically 0 and 1
+  "log_frequency": 100,               // Log after every N machines simulated
+  "save_partial_results": true,       // Save intermediate progress
+  "enable_checkpointing": true,       // Checkpoint to disk periodically
+  "checkpoint_interval": 3600,        // Interval in seconds (1 hour)
+
+  "rl_guided_mode": false,            // Enable reinforcement learning prioritization
+  "rl_model_path": "heuristics/model.pkl",  // Path to pretrained model if applicable
+
+  "throttle_enabled": true,           // Enable compute throttling
+  "throttle_schedule": {
+    "start_hour": 9,                  // Throttle on weekdays from 9 AM...
+    "end_hour": 18,                   // ...to 6 PM local time
+    "days_active": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+  },
+
+  "output_directory": "logs/",        // Where to write logs and checkpoints
+  "log_file_prefix": "busybeaver_",   // Prefix for log files
+  "pending_file": "logs/pending.json",
+  "skipped_file": "logs/skipped.json"
+}
