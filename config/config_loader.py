@@ -24,6 +24,37 @@ DEFAULT_CONFIG = {
     "skipped_file": "logs/skipped.json"
 }
 
+# Expected types for validation
+CONFIG_SCHEMA = {
+    "max_steps": int,
+    "state_size": int,
+    "num_symbols": int,
+    "log_frequency": int,
+    "save_partial_results": bool,
+    "enable_checkpointing": bool,
+    "checkpoint_interval": int,
+    "rl_guided_mode": bool,
+    "rl_model_path": str,
+    "throttle_enabled": bool,
+    "throttle_schedule": dict,
+    "output_directory": str,
+    "log_file_prefix": str,
+    "pending_file": str,
+    "skipped_file": str
+}
+
+def validate_config(config):
+    for key, expected_type in CONFIG_SCHEMA.items():
+        if key not in config:
+            raise ValueError(f"Missing required configuration key: {key}")
+        if not isinstance(config[key], expected_type):
+            raise TypeError(f"Config key '{key}' expected {expected_type}, got {type(config[key])}.")
+
+    # Special check inside throttle_schedule
+    throttle = config["throttle_schedule"]
+    if not all(k in throttle for k in ["start_hour", "end_hour", "days_active"]):
+        raise ValueError("Throttle schedule must contain 'start_hour', 'end_hour', and 'days_active'.")
+
 def load_config(path="config/runtime_config.json"):
     if not os.path.exists(path):
         raise FileNotFoundError(f"Configuration file not found at: {path}")
@@ -34,6 +65,9 @@ def load_config(path="config/runtime_config.json"):
     # Merge defaults with overrides
     config = DEFAULT_CONFIG.copy()
     config.update(user_config)
+
+    # Validate schema
+    validate_config(config)
 
     # Validate output directory
     os.makedirs(config["output_directory"], exist_ok=True)
